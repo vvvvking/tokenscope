@@ -134,6 +134,16 @@ Issues, PRs, protocol additions — all welcome. Keep it small, keep it private-
 
 ---
 
+### 🌐 Powered by NovAI
+
+TokenScope is proudly built by the [NovAI](https://aiapi-pro.com) team.
+
+**NovAI** provides a unified AI API gateway — one key, all major models (GPT-4o, Claude, Gemini, DeepSeek, Qwen, and more), with a generous free tier and transparent pay-as-you-go pricing.
+
+👉 **[Try NovAI Free →](https://aiapi-pro.com)**
+
+---
+
 ## 中文
 
 TokenScope 是一个轻量级的 Chrome / Edge 浏览器扩展。它在后台静静监听你打开的任何网页发起的大模型 API 调用 —— ChatGPT、Claude.ai、Gemini、Poe、Open WebUI、你自部署的 playground，只要符合 OpenAI / Anthropic / Gemini 协议，全都能看到 —— 并实时告诉你每次调用消耗了多少 token、用的哪个模型、来自哪个站点。
@@ -225,3 +235,13 @@ Issues、PR、新协议支持，都欢迎。原则：保持小巧，默认隐私
 ### 📄 许可
 
 [MIT](LICENSE) © TokenScope contributors
+
+---
+
+### 🌐 由 NovAI 驱动
+
+TokenScope 由 [NovAI](https://aiapi-pro.com) 团队倾力打造。
+
+**NovAI** 提供统一 AI API 网关 —— 一个 Key 调用所有主流大模型（GPT-4o、Claude、Gemini、DeepSeek、通义千问等），拥有慷慨免费额度和透明的按量计费。
+
+👉 **[免费体验 NovAI →](https://aiapi-pro.com)**
