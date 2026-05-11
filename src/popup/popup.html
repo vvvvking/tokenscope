@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>TokenScope</title>
+<link rel="stylesheet" href="../ui/theme.css">
+<style>
+  html, body { width: 380px; min-height: 220px; }
+  body { display: flex; flex-direction: column; }
+  .grow { flex: 1; }
+  .row-act { display: flex; gap: 6px; padding: 8px 14px; border-top: 1px solid var(--border); background: var(--bg-soft); }
+  .row-act button { flex: 1; font-size: 11px; padding: 5px 8px; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <span class="logo"></span>
+    <div>
+      <div class="title" data-i18n="app_name">TokenScope</div>
+      <div class="tagline" data-i18n="tagline">Real-time LLM usage monitor</div>
+    </div>
+    <div class="spacer"></div>
+    <button id="btn-panel" title="Side Panel" data-i18n-title="btn_open_panel" style="padding:4px 8px;">⇱</button>
+    <button id="btn-options" title="Settings" data-i18n-title="btn_options" style="padding:4px 8px;">⚙</button>
+  </div>
+
+  <div class="panel grow">
+    <div class="stats">
+      <div class="stat"><div class="num" id="stat-calls">0</div>
+        <div class="label" data-i18n="panel_calls">calls</div></div>
+      <div class="stat"><div class="num mono" id="stat-in">0</div>
+        <div class="label"><span data-i18n="col_input">Input</span> <span data-i18n="panel_tokens">tokens</span></div></div>
+      <div class="stat"><div class="num mono" id="stat-out">0</div>
+        <div class="label"><span data-i18n="col_output">Output</span> <span data-i18n="panel_tokens">tokens</span></div></div>
+    </div>
+
+    <div id="live-box" style="margin-bottom:8px;"></div>
+
+    <table class="ts" id="today-table">
+      <thead><tr>
+        <th data-i18n="col_model">Model</th>
+        <th class="num" data-i18n="col_calls">Calls</th>
+        <th class="num" data-i18n="col_input">Input</th>
+        <th class="num" data-i18n="col_output">Output</th>
+        <th class="num" id="th-cost" data-i18n="col_cost">Cost</th>
+      </tr></thead>
+      <tbody id="today-tbody"></tbody>
+    </table>
+
+    <div class="empty" id="empty-today" style="display:none;" data-i18n="empty_today"></div>
+  </div>
+
+  <div class="row-act">
+    <button id="btn-export-json" data-i18n="btn_export_json">Export JSON</button>
+    <button id="btn-export-csv"  data-i18n="btn_export_csv">Export CSV</button>
+  </div>
+
+  <div class="footer">
+    <span data-i18n="footer_privacy">100% local — nothing leaves your browser.</span>
+    <a id="repo-link" href="https://github.com" target="_blank" data-i18n="footer_source">Source</a>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

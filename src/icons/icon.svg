@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"  stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="112" height="112" rx="24" fill="url(#g)"/>
+  <!-- magnifier -->
+  <circle cx="54" cy="54" r="22" fill="none" stroke="#fff" stroke-width="8"/>
+  <rect x="70" y="70" width="28" height="10" rx="5" transform="rotate(45 70 70)" fill="#fff"/>
+  <!-- token dots inside the lens -->
+  <circle cx="46" cy="54" r="3.4" fill="#fff"/>
+  <circle cx="56" cy="54" r="3.4" fill="#fff"/>
+  <circle cx="66" cy="54" r="3.4" fill="#fff"/>
+</svg>

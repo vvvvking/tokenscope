@@ -1,0 +1,25 @@
+{
+  "name": "tokenscope",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Real-time, privacy-first monitoring of your LLM API usage. Chrome / Edge extension.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "icons": "node scripts/gen-icons.mjs",
+    "build": "npm run icons && node scripts/build.mjs",
+    "dev":   "echo 'Load src/ as unpacked extension in chrome://extensions'"
+  },
+  "devDependencies": {
+    "sharp":   "^0.33.5",
+    "adm-zip": "^0.5.14"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR-USERNAME/tokenscope"
+  },
+  "keywords": [
+    "llm", "tokens", "openai", "anthropic", "claude", "gemini", "chatgpt",
+    "usage", "monitor", "chrome-extension", "privacy"
+  ]
+}

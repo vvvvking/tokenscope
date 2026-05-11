@@ -1,0 +1,35 @@
+{
+  "name": "tokenscope-proxy",
+  "version": "0.1.0",
+  "description": "Local HTTP proxy that captures LLM API usage from any desktop agent (Claude Code, Cursor, Cline, OpenClaw, custom SDKs) and feeds it into the TokenScope browser extension.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "tokenscope-proxy": "bin/cli.mjs"
+  },
+  "main": "src/index.mjs",
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "node bin/cli.mjs",
+    "dev":   "node bin/cli.mjs --verbose"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "keywords": [
+    "llm", "proxy", "openai", "anthropic", "claude-code", "cursor",
+    "cline", "token-counter", "usage-monitor", "tokenscope"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR-USERNAME/tokenscope",
+    "directory": "proxy"
+  }
+}

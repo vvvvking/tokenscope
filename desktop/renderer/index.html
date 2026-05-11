@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+  <title>TokenScope</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ─── First-run wizard ─────────────────────────────────────────────── -->
+<div id="wizard" class="wizard hidden">
+  <div class="wizard-card">
+    <div class="wizard-step" data-step="welcome">
+      <h2>👋 欢迎使用 TokenScope</h2>
+      <p class="muted">一个本地运行的 LLM 用量监视器。所有数据只保存在你的电脑上。</p>
+      <ul class="feature-list">
+        <li>✅ 实时看到每一次调用的 input / output tokens</li>
+        <li>✅ 兼容 Claude Code、Cursor、Cline、OpenAI/Anthropic/Gemini SDK</li>
+        <li>✅ 不截流、不改包，只观测</li>
+      </ul>
+      <div class="wizard-actions">
+        <button class="btn primary" data-action="wizard-next" data-next="pick">开始设置</button>
+      </div>
+    </div>
+
+    <div class="wizard-step hidden" data-step="pick">
+      <h2>你主要用哪个工具？</h2>
+      <p class="muted">我们会生成一段你可以直接复制的配置。之后换其它工具也能随时在「主页」看到全部配置。</p>
+      <div class="tool-grid" id="wizardToolGrid"></div>
+      <div class="wizard-actions">
+        <button class="btn ghost" data-action="wizard-next" data-next="welcome">← 返回</button>
+        <button class="btn primary" data-action="wizard-next" data-next="done" id="wizardPickNext" disabled>下一步 →</button>
+      </div>
+    </div>
+
+    <div class="wizard-step hidden" data-step="done">
+      <h2>🎉 设置完成</h2>
+      <p>TokenScope 已经在后台运行，监听 <code id="wizardProxyAddr">http://127.0.0.1:17666</code>。</p>
+      <div class="snippet-block">
+        <div class="snippet-title">把下面这段贴进去（<span id="wizardToolName">?</span>）</div>
+        <pre id="wizardSnippet">...</pre>
+        <button class="btn primary small" data-action="copy-snippet">复制</button>
+      </div>
+      <p class="muted small">窗口关闭后，TokenScope 会缩到系统托盘继续工作。随时点托盘图标打开主界面。</p>
+      <div class="wizard-actions">
+        <button class="btn primary" data-action="wizard-finish">好了，进入主界面</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Main layout ──────────────────────────────────────────────────── -->
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">🔍</div>
+      <div>
+        <div class="brand-name">TokenScope</div>
+        <div class="brand-ver" id="brandVer">v0.3.0</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item active" data-tab="home">🏠 主页</button>
+      <button class="nav-item"         data-tab="live">⚡ 实时</button>
+      <button class="nav-item"         data-tab="history">📜 历史</button>
+      <button class="nav-item"         data-tab="settings">⚙️ 设置</button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="status-pill" id="statusPill">
+        <span class="dot"></span><span id="statusText">...</span>
+      </div>
+      <button class="btn ghost block" id="toggleProxyBtn">启动代理</button>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ─── Tab: Home ─────────────────────────────────────────────── -->
+    <section class="tab active" data-tab="home">
+      <header class="tab-head">
+        <h1>主页</h1>
+        <p class="muted">代理运行状态 + 今日用量 + 一键接入</p>
+      </header>
+
+      <div class="cards">
+        <div class="card">
+          <div class="card-label">今日调用</div>
+          <div class="card-value" id="statToday">0</div>
+          <div class="card-sub"><span id="statTodayOk">0</span> 成功 · <span id="statTodayErr">0</span> 失败</div>
+        </div>
+        <div class="card">
+          <div class="card-label">今日 input tokens</div>
+          <div class="card-value" id="statTodayIn">0</div>
+        </div>
+        <div class="card">
+          <div class="card-label">今日 output tokens</div>
+          <div class="card-value" id="statTodayOut">0</div>
+        </div>
+        <div class="card">
+          <div class="card-label">累计记录</div>
+          <div class="card-value" id="statTotal">0</div>
+          <div class="card-sub" id="statRecordsFile">—</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <h2>接入方式</h2>
+          <p class="muted">选一个你在用的工具，复制配置。TokenScope 会透明转发请求，你现有的 API Key 照常用。</p>
+        </div>
+
+        <div class="tools">
+          <div class="tools-tabs" id="toolsTabs"></div>
+          <div class="tools-body">
+            <div class="snippet-block">
+              <div class="snippet-title" id="toolsSnippetTitle">—</div>
+              <pre id="toolsSnippet">—</pre>
+              <div class="snippet-actions">
+                <button class="btn primary small" data-action="copy-tools-snippet">复制</button>
+                <span class="copy-hint" id="toolsCopyHint"></span>
+              </div>
+            </div>
+            <p class="muted small" id="toolsNote"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Tab: Live ─────────────────────────────────────────────── -->
+    <section class="tab" data-tab="live">
+      <header class="tab-head">
+        <h1>实时</h1>
+        <p class="muted">最近的调用，新事件会从顶部流入。</p>
+      </header>
+      <div class="toolbar">
+        <span class="badge" id="liveCount">0 条</span>
+        <div class="spacer"></div>
+        <button class="btn ghost small" data-action="clear-live">清空本地视图</button>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>时间</th><th>协议</th><th>模型</th><th>状态</th>
+              <th class="num">in</th><th class="num">out</th><th class="num">耗时</th>
+            </tr>
+          </thead>
+          <tbody id="liveRows">
+            <tr><td colspan="7" class="empty">等待调用…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ─── Tab: History ─────────────────────────────────────────── -->
+    <section class="tab" data-tab="history">
+      <header class="tab-head">
+        <h1>历史</h1>
+        <p class="muted">从代理本地文件读取的完整调用历史。</p>
+      </header>
+      <div class="toolbar">
+        <input type="text" id="historyFilter" placeholder="按模型 / 协议 / 错误过滤…">
+        <span class="badge" id="historyCount">0 条</span>
+        <div class="spacer"></div>
+        <button class="btn ghost small" data-action="refresh-history">刷新</button>
+        <button class="btn ghost small" data-action="clear-records">清空全部历史</button>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>时间</th><th>协议</th><th>模型</th><th>状态</th>
+              <th class="num">in</th><th class="num">out</th><th class="num">total</th><th class="num">耗时</th>
+            </tr>
+          </thead>
+          <tbody id="historyRows">
+            <tr><td colspan="8" class="empty">加载中…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ─── Tab: Settings ────────────────────────────────────────── -->
+    <section class="tab" data-tab="settings">
+      <header class="tab-head">
+        <h1>设置</h1>
+        <p class="muted">保留条数、端口、开机自启。</p>
+      </header>
+
+      <div class="form">
+        <label class="row">
+          <span>代理端口</span>
+          <input type="number" id="setProxyPort" min="1024" max="65535">
+        </label>
+        <label class="row">
+          <span>控制端口</span>
+          <input type="number" id="setControlPort" min="1024" max="65535">
+        </label>
+        <label class="row">
+          <span>本地最多保留</span>
+          <input type="number" id="setRetention" min="100" max="50000">
+          <span class="muted">条记录</span>
+        </label>
+        <label class="row switch">
+          <input type="checkbox" id="setAutoStart">
+          <span>应用启动时自动启动代理</span>
+        </label>
+        <label class="row switch">
+          <input type="checkbox" id="setLaunchAtLogin">
+          <span>开机自动运行 TokenScope</span>
+        </label>
+        <label class="row">
+          <span>默认上游（OpenAI 协议）</span>
+          <select id="setDefaultUpstream"></select>
+        </label>
+        <div class="row actions">
+          <button class="btn primary" data-action="save-settings">保存</button>
+          <span class="muted" id="settingsSaveHint"></span>
+        </div>
+        <hr>
+        <div class="row actions">
+          <button class="btn ghost" data-action="open-data-dir">📂 打开数据目录</button>
+          <button class="btn danger" data-action="quit">退出 TokenScope</button>
+        </div>
+        <p class="muted small">
+          记录文件：<code id="settingsRecordsFile">—</code>
+        </p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

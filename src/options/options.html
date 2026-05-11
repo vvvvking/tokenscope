@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>TokenScope — Settings</title>
+<link rel="stylesheet" href="../ui/theme.css">
+<style>
+  body { max-width: 760px; margin: 0 auto; padding: 0 20px 40px; }
+  h2 { font-size: 16px; margin: 18px 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  p.hint { color: var(--text-soft); font-size: 12px; white-space: pre-line; margin: 4px 0 10px; }
+  .field { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+  .field label { min-width: 180px; color: var(--text-soft); font-size: 12px; }
+  .field input[type="text"], .field input[type="number"], .field select { min-width: 160px; }
+  table.pt { width: 100%; border-collapse: collapse; font-size: 12px; margin: 8px 0; }
+  table.pt th, table.pt td { padding: 5px 6px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+  table.pt input { width: 100%; }
+  .bar { display: flex; gap: 8px; align-items: center; margin: 14px 0; }
+  .bar .spacer { flex: 1; }
+  textarea { font-family: var(--mono); font-size: 12px; width: 100%; min-height: 80px;
+             padding: 8px; border-radius: 6px; border: 1px solid var(--border);
+             background: var(--bg); color: var(--text); }
+</style>
+</head>
+<body>
+  <div class="header" style="margin: 0 -20px 0;">
+    <span class="logo"></span>
+    <div>
+      <div class="title" data-i18n="settings_title">TokenScope — Settings</div>
+      <div class="tagline" data-i18n="tagline">Real-time LLM usage monitor</div>
+    </div>
+  </div>
+
+  <h2 data-i18n="sec_general">General</h2>
+  <div class="field">
+    <label data-i18n="lbl_language">Language</label>
+    <select id="opt-lang">
+      <option value="auto" data-i18n="lbl_lang_auto">Auto</option>
+      <option value="zh"   data-i18n="lbl_lang_zh">中文</option>
+      <option value="en"   data-i18n="lbl_lang_en">English</option>
+    </select>
+  </div>
+  <div class="field">
+    <label><input type="checkbox" id="opt-show-cost"> <span data-i18n="lbl_show_cost">Show cost column</span></label>
+  </div>
+  <div class="field">
+    <label data-i18n="lbl_retention">Max detail records</label>
+    <input type="number" id="opt-retention" min="100" max="100000" step="100">
+  </div>
+
+  <h2 data-i18n="sec_pricing">Pricing (optional)</h2>
+  <p class="hint" data-i18n="pricing_desc"></p>
+  <table class="pt">
+    <thead><tr>
+      <th style="width:36%" data-i18n="pricing_pattern">Model pattern</th>
+      <th style="width:22%" data-i18n="pricing_in">Input $ / 1M</th>
+      <th style="width:22%" data-i18n="pricing_out">Output $ / 1M</th>
+      <th style="width:12%" data-i18n="pricing_currency">Currency</th>
+      <th style="width:8%"></th>
+    </tr></thead>
+    <tbody id="pricing-tbody"></tbody>
+  </table>
+  <button id="btn-add-row" data-i18n="btn_add_row">+ Add row</button>
+
+  <h2 data-i18n="sec_hosts">Watched Hosts</h2>
+  <div class="field">
+    <label><input type="radio" name="watch-mode" id="watch-all" value="all"> <span data-i18n="lbl_watch_all">Watch all hosts</span></label>
+  </div>
+  <div class="field" style="align-items:flex-start;">
+    <label style="padding-top:6px;"><input type="radio" name="watch-mode" id="watch-list" value="list"> <span data-i18n="lbl_watch_allowlist">Only these hosts</span></label>
+    <textarea id="opt-hosts" placeholder="chatgpt.com&#10;claude.ai&#10;aiapi-pro.com"></textarea>
+  </div>
+
+  <h2 data-i18n="sec_proxy">Desktop Agent Proxy</h2>
+  <p class="hint" data-i18n="proxy_desc"></p>
+  <div class="field">
+    <label><input type="checkbox" id="opt-proxy-enabled"> <span data-i18n="lbl_proxy_enabled">Connect to local tokenscope-proxy</span></label>
+  </div>
+  <div class="field">
+    <label data-i18n="lbl_proxy_url">Proxy WebSocket URL</label>
+    <input type="text" id="opt-proxy-url" style="min-width:260px;" placeholder="ws://127.0.0.1:17667/ws">
+    <button id="btn-proxy-test" data-i18n="btn_test_connection">Test</button>
+  </div>
+  <div class="field">
+    <label data-i18n="lbl_proxy_status">Status</label>
+    <span id="proxy-status-dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--text-dim);margin-right:6px;"></span>
+    <span id="proxy-status-text" style="font-size:12px;color:var(--text-soft);"></span>
+  </div>
+
+  <h2 data-i18n="sec_data">Data</h2>
+  <div class="bar">
+    <button id="btn-clear" class="danger" data-i18n="btn_clear">Clear All Data</button>
+    <div class="spacer"></div>
+    <span id="save-indicator" class="dim" style="font-size:12px;"></span>
+    <button id="btn-save" class="primary" data-i18n="btn_save">Save</button>
+  </div>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

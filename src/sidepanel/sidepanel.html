@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>TokenScope — Side Panel</title>
+<link rel="stylesheet" href="../ui/theme.css">
+<style>
+  html, body { height: 100%; }
+  body { display: flex; flex-direction: column; }
+  .grow { flex: 1; overflow: auto; }
+  .row-filter {
+    display: flex; gap: 6px; padding: 8px 14px;
+    border-bottom: 1px solid var(--border); background: var(--bg-soft);
+    align-items: center; flex-wrap: wrap;
+  }
+  .call-row { cursor: pointer; }
+  .call-row td.trunc { max-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .detail-section { margin-top: 10px; }
+  .detail-section h4 {
+    margin: 6px 0 4px;
+    font-size: 11px; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; font-size: 12px; }
+  .kv .k { color: var(--text-dim); }
+  .kv .v { font-family: var(--mono); word-break: break-word; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <span class="logo"></span>
+    <div>
+      <div class="title" data-i18n="app_name">TokenScope</div>
+      <div class="tagline" data-i18n="tagline">Real-time LLM usage monitor</div>
+    </div>
+    <div class="spacer"></div>
+    <button id="btn-options" data-i18n="btn_options">Settings</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="live"    data-i18n="tab_live">Live</div>
+    <div class="tab"        data-tab="today"   data-i18n="tab_today">Today</div>
+    <div class="tab"        data-tab="history" data-i18n="tab_history">History</div>
+    <div class="tab"        data-tab="models"  data-i18n="tab_models">Models</div>
+  </div>
+
+  <div class="grow">
+
+    <!-- LIVE -->
+    <div class="panel view" id="view-live">
+      <div id="live-list"></div>
+      <div class="empty" id="live-empty" data-i18n="live_empty"></div>
+    </div>
+
+    <!-- TODAY -->
+    <div class="panel view" id="view-today" style="display:none;">
+      <div class="stats">
+        <div class="stat"><div class="num" id="t-calls">0</div>
+          <div class="label" data-i18n="panel_calls">calls</div></div>
+        <div class="stat"><div class="num" id="t-in">0</div>
+          <div class="label"><span data-i18n="col_input">Input</span> tokens</div></div>
+        <div class="stat"><div class="num" id="t-out">0</div>
+          <div class="label"><span data-i18n="col_output">Output</span> tokens</div></div>
+      </div>
+      <table class="ts"><thead><tr>
+        <th data-i18n="col_model">Model</th>
+        <th class="num" data-i18n="col_calls">Calls</th>
+        <th class="num" data-i18n="col_input">Input</th>
+        <th class="num" data-i18n="col_output">Output</th>
+        <th class="num" data-i18n="col_total">Total</th>
+        <th class="num" id="t-th-cost" data-i18n="col_cost">Cost</th>
+      </tr></thead>
+      <tbody id="t-tbody"></tbody></table>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="panel view" id="view-history" style="display:none;">
+      <div class="row-filter">
+        <input type="text" id="filter-q" data-i18n-ph="col_model" placeholder="Model" style="flex:1;">
+        <button id="btn-export-csv-h" data-i18n="btn_export_csv">Export CSV</button>
+      </div>
+      <table class="ts"><thead><tr>
+        <th data-i18n="col_time">Time</th>
+        <th data-i18n="col_host">Host</th>
+        <th data-i18n="col_model">Model</th>
+        <th data-i18n="col_status">Status</th>
+        <th class="num" data-i18n="col_input">In</th>
+        <th class="num" data-i18n="col_output">Out</th>
+        <th class="num" data-i18n="col_elapsed">ms</th>
+      </tr></thead>
+      <tbody id="h-tbody"></tbody></table>
+      <div class="empty" id="h-empty" style="display:none;" data-i18n="history_empty"></div>
+    </div>
+
+    <!-- MODELS (last 30d) -->
+    <div class="panel view" id="view-models" style="display:none;">
+      <table class="ts"><thead><tr>
+        <th data-i18n="col_model">Model</th>
+        <th class="num" data-i18n="col_calls">Calls</th>
+        <th class="num" data-i18n="col_input">Input</th>
+        <th class="num" data-i18n="col_output">Output</th>
+        <th class="num" data-i18n="col_total">Total</th>
+      </tr></thead>
+      <tbody id="m-tbody"></tbody></table>
+    </div>
+
+  </div>
+
+  <!-- DETAIL MODAL -->
+  <div class="modal-mask" id="detail-mask">
+    <div class="modal">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <b class="mono" id="dm-model">—</b>
+        <span class="spacer" style="flex:1;"></span>
+        <span class="badge" id="dm-status">—</span>
+        <button onclick="document.getElementById('detail-mask').classList.remove('open')">✕</button>
+      </div>
+      <div class="detail-section">
+        <h4>Meta</h4>
+        <div class="kv" id="dm-meta"></div>
+      </div>
+      <div class="detail-section">
+        <h4>Usage</h4>
+        <div class="kv" id="dm-usage"></div>
+      </div>
+      <div class="detail-section">
+        <h4 data-i18n="col_input">Input</h4>
+        <pre class="log" id="dm-in"></pre>
+      </div>
+      <div class="detail-section">
+        <h4 data-i18n="col_output">Output</h4>
+        <pre class="log" id="dm-out"></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span data-i18n="footer_privacy">100% local — nothing leaves your browser.</span>
+    <a id="repo-link" href="https://github.com" target="_blank" data-i18n="footer_source">Source</a>
+  </div>
+
+  <script type="module" src="sidepanel.js"></script>
+</body>
+</html>

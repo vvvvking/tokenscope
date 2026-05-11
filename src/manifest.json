@@ -1,0 +1,68 @@
+{
+  "manifest_version": 3,
+  "name": "TokenScope — LLM Usage Monitor",
+  "short_name": "TokenScope",
+  "version": "0.2.0",
+  "description": "Real-time, privacy-first monitoring of your LLM API usage. See tokens consumed per model, per session, in real time. 100% local.",
+  "default_locale": "en",
+
+  "icons": {
+    "16":  "icons/icon16.png",
+    "32":  "icons/icon32.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "TokenScope",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "32":  "icons/icon32.png",
+      "48":  "icons/icon48.png"
+    }
+  },
+
+  "side_panel": {
+    "default_path": "sidepanel/sidepanel.html"
+  },
+
+  "background": {
+    "service_worker": "background/service_worker.js",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/content_bridge.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "ISOLATED"
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["content/inject_hook.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+
+  "permissions": [
+    "storage",
+    "sidePanel",
+    "activeTab"
+  ],
+
+  "host_permissions": [
+    "<all_urls>"
+  ],
+
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+
+  "minimum_chrome_version": "114"
+}

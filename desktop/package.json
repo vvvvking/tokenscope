@@ -1,0 +1,60 @@
+{
+  "name": "tokenscope-desktop",
+  "version": "0.3.0",
+  "private": true,
+  "description": "TokenScope Desktop - real-time LLM usage monitor for any desktop agent. One double-click, no config.",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "main.js",
+  "author": {
+    "name": "TokenScope contributors"
+  },
+  "scripts": {
+    "start":       "electron .",
+    "dev":         "electron . --dev",
+    "build":       "electron-builder",
+    "build:win":   "electron-builder --win",
+    "build:mac":   "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "electron":         "^32.0.0",
+    "electron-builder": "^25.0.5"
+  },
+  "build": {
+    "appId": "com.tokenscope.desktop",
+    "productName": "TokenScope",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "proxy-embed/**",
+      "renderer/**",
+      "!**/*.map"
+    ],
+    "win": {
+      "target": ["nsis"],
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "TokenScope"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "category": "public.app-category.developer-tools"
+    },
+    "linux": {
+      "target": ["AppImage"],
+      "category": "Development"
+    }
+  }
+}

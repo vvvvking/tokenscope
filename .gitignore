@@ -1,0 +1,13 @@
+node_modules/
+dist/
+out/
+*.log
+.DS_Store
+.vscode/
+.idea/
+src/icons/icon16.png
+src/icons/icon32.png
+src/icons/icon48.png
+src/icons/icon128.png
+*.exe
+*.blockmap
