@@ -7,6 +7,8 @@
 
 [English](#english) · [中文](#中文) · [MIT License](LICENSE)
 
+<a href="https://www.producthunt.com/posts/tokenscope?utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-tokenscope" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=tokenscope&theme=light" alt="TokenScope - Real-time, privacy-first monitoring of your LLM API usage" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
 </div>
 
 ---
